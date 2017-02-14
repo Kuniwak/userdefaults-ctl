@@ -2,7 +2,7 @@
 
 
 function run() {
-  local command_name='userdefaults-ctl'
+	local command_name='userdefaults-ctl'
 
 	cat << EOS
 usage: $command_name <command> [options]

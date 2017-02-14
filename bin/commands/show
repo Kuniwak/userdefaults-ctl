@@ -6,7 +6,7 @@ function run() {
 	local root_dir="$(cd "$(dirname "$0")/../.."; pwd)"
 	local plist="$("$root_dir/bin/commands/run" "path" "$bundle_identifier")"
 
-  [[ -z "$plist" ]] && exit 1
+	[[ -z "$plist" ]] && exit 1
 
 	if is_binary_plist "$plist"; then
 		# Print as a human-readable format
