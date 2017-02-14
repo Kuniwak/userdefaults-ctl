@@ -1,0 +1,37 @@
+#!/bin/bash -eu -o pipefail
+
+
+function run() {
+	local bundle_identifier="$1"
+	local uuid="$(list_booted_uuid | head -1)"
+	local search_path="$HOME/Library/Developer/CoreSimulator/Devices/$uuid"
+
+	local plist="$(find "$search_path" -name "$bundle_identifier.plist" | head -1)"
+	if [[ -z "$plist" ]]; then
+		throw "No such bundle identifier: '$bundle_identifier'"
+	else
+		echo "$plist"
+	fi
+}
+
+
+function throw() {
+	echo -e "$*" 1>&2
+	exit 1
+}
+
+
+function list_booted_uuid() {
+	# $ xcrun simctl list
+	#    ...
+	#    iPhone 7 (EEECEA0C-880B-4BB0-BC8B-4A2106961920) (Booted)
+	#    iPhone 7 Plus (BB855A8A-C9DF-4578-B7BB-597424610B73) (Shutdown)
+	#    ...
+	#
+	# $ list_booted_uuid
+	# EEECEA0C-880B-4BB0-BC8B-4A2106961920
+	xcrun simctl list | grep Booted | sed -e 's/^[^(]*(\([^)]*\).*$/\1/g' | sort | uniq
+}
+
+
+run "${2:-}"

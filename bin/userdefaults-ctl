@@ -1,0 +1,17 @@
+#!/bin/bash -eu -o pipefail
+
+
+
+function main() {
+	local root_dir="$(cd "$(dirname "$0")/.."; pwd)"
+
+	if [[ -z "$1" ]]; then
+		"$root_dir/bin/commands/run" "help"
+	else
+		"$root_dir/bin/commands/run" "$@"
+	fi
+
+}
+
+
+main "$@"

@@ -1,0 +1,26 @@
+#!/bin/bash -eu -o pipefail
+
+
+function run() {
+	local bundle_identifier="$1"
+	local root_dir="$(cd "$(dirname "$0")/../.."; pwd)"
+	local plist="$("$root_dir/bin/commands/run" "path" "$bundle_identifier")"
+
+  [[ -z "$plist" ]] && exit 1
+
+	if is_binary_plist "$plist"; then
+		# Print as a human-readable format
+		plutil -convert xml1 -o - -- "$plist"
+	else
+		cat "$plist"
+	fi
+}
+
+
+function is_binary_plist() {
+	local plist="$1"
+	file "$plist" | grep --silent "Apple binary property list"
+}
+
+
+run "${2:-}"

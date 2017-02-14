@@ -1,0 +1,30 @@
+#!/bin/bash -eu -o pipefail
+
+
+function run() {
+  local command_name='userdefaults-ctl'
+
+	cat << EOS
+usage: $command_name <command> [options]
+
+These are available commands:
+
+   path <bundle_id>   Print a path for the UserDefaults of the booted device
+   show <bundle_id>   Print a content of the UserDefaults of the booted device
+   edit <bundle_id>   Edit the UserDefaults of the booted device by \$EDITOR
+   help               Print this help
+
+
+Example:
+
+   \$ $command_name show com.example.app
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD ...
+   <plist version="1.0">
+   ...
+EOS
+}
+
+
+run

@@ -1,0 +1,20 @@
+#!/bin/bash -eu -o pipefail
+
+
+function throw() {
+	echo -n "$*" 1>&2
+	exit 1
+}
+
+
+function run_sub_command() {
+	local sub_command_name="$1"
+	local commands_dir="$(cd "$(dirname "$0")"; pwd)"
+	local sub_command="$commands_dir/$1"
+
+	[[ -f "$sub_command" ]] || throw "No such subcommand: $sub_command"
+	"$sub_command" "$@"
+}
+
+
+run_sub_command "$@"

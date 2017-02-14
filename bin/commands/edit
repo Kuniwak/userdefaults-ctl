@@ -1,0 +1,54 @@
+#!/bin/bash -eu -o pipefail
+
+
+function run() {
+	local bundle_identifier="$1"
+	local root_dir="$(cd "$(dirname "$0")/../.."; pwd)"
+	local plist="$("$root_dir/bin/commands/run" "path" "$bundle_identifier")"
+
+  [[ -z "$plist" ]] && exit 1
+
+	local tmp_plist="$(write_to_tmp "$bundle_identifier" "$plist")"
+
+	"$EDITOR" "$tmp_plist"
+
+	echo -e "# Changes\n"
+	diff -u "$plist" "$tmp_plist" || true
+
+	echo -e "\n# Validation"
+  if validate "$tmp_plist"; then
+    echo "Syntax: VALID"
+  else
+    throw "Syntax: INVALID"
+  fi
+
+	local timestamp="$(date +%s)"
+	mv "$plist" "$plist.bkup-$timestamp"
+	mv "$tmp_plist" "$plist"
+}
+
+
+function write_to_tmp() {
+  local bundle_identifier="$1"
+	local plist="$2"
+	local tmp_plist="$(mktemp "$plist.XXXXXX")"
+
+	"$root_dir/bin/commands/run" "show" "$bundle_identifier" > "$tmp_plist"
+	echo "$tmp_plist"
+}
+
+
+function validate() {
+	local plist="$1"
+
+	plutil -lint "$plist" | grep --silent 'OK$'
+}
+
+
+function throw() {
+	echo -e "$*" 1>&2
+	exit 1
+}
+
+
+run "${2:-}"
